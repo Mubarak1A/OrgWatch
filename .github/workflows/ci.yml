@@ -17,3 +17,8 @@ jobs:
           cache: npm
 
       - run: npm ci
+        working-directory: backend
+
+      - run: npm run build
+        working-directory: backend
+
