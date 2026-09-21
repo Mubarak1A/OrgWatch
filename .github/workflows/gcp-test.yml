@@ -1,0 +1,36 @@
+name: Diagnostic - Verify GCP Secrets
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    environment: main
+
+    steps:
+      - name: Authenticate to GCP
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
+
+      - name: Set up gcloud CLI
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Confirm GCP auth works
+        run: gcloud projects describe ${{ secrets.GCP_PROJECT_ID }}
+
+      - name: Check secrets/vars are present (names only, no values)
+        run: |
+          echo "GCP_SERVICE_ACCOUNT_KEY length: ${#GCP_SA_KEY}"
+          echo "GCP_PROJECT_ID length: ${#GCP_PROJECT_ID}"
+          echo "CLOUD_RUN_SECRETS length: ${#CLOUD_RUN_SECRETS}"
+          echo "CLOUD_RUN_VARIABLES length: ${#CLOUD_RUN_VARIABLES}"
+          echo "CLOUD_RUN_FIREBASE_PRIVATE_KEY length: ${#CLOUD_RUN_FIREBASE_PRIVATE_KEY}"
+        env:
+          GCP_SA_KEY: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
+          GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+          CLOUD_RUN_SECRETS: ${{ secrets.CLOUD_RUN_SECRETS }}
+          CLOUD_RUN_VARIABLES: ${{ vars.CLOUD_RUN_VARIABLES }}
+          CLOUD_RUN_FIREBASE_PRIVATE_KEY: ${{ secrets.CLOUD_RUN_FIREBASE_PRIVATE_KEY }}
